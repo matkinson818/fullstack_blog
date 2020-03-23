@@ -1,7 +1,10 @@
 const express = require('express');
-const routes = require('./route');
+const routes = require('./routes/route');
+const authRouter = require('./routes/auth');
+require("dotenv").config();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+
 
 // Setup express app
 const app = express();
@@ -23,6 +26,8 @@ app.use((err, req, res, next) => {
 
 //Initalize routes
 app.use('/api', routes);
+
+app.use("/auth", require("./routes/auth"));
 
 // Listen for requests
 app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}`))

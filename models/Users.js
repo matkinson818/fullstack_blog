@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const uniqueValidator = require('mongoose-unique-validator');
 const crypto = require('crypto');
 const jwt =  require('jsonwebtoken');
-const secret = require('../config').secret;
+const secret = require('../app').secret;
 
 const userSchema = new Schema({
     username: {
@@ -35,6 +35,18 @@ userSchema.methods.setPassword = (password) => {
 
 userSchema.methods.validPassword = (password) => {
     let hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
+}
+
+userSchema.methods.generateJWT = () => {
+    let today = new Date();
+    let exp = new Date(today);
+    exp.setDate(today.getDate() + 60);
+
+    return jwt.sign({
+        id: this._id,
+        username: this.username,
+        exp: parseInt(exp.getTime() / 1000),
+    }, secret)
 }
 
 userSchema.plugin(uniqueValidator, {message: 'is already taken.'})
