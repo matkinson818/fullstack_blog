@@ -1,10 +1,12 @@
 const express = require('express');
 const routes = require('./routes/route');
 const authRouter = require('./routes/auth');
-require("dotenv").config();
+const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+//Load env vars
+dotenv.config({ path: './config/config.env' })
 
 // Setup express app
 const app = express();

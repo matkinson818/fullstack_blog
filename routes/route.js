@@ -12,17 +12,7 @@ router.get('/', (req, res) => {
 
 //Create an comment on blog
 router.post('/post/:id', (req, res) => {
-    const post = post.findOne({ id: req.params.id });
-
-    let comment = new Comment();
-    comment.content = req.body.content;
-    comment.post = post._id;
-    comment.save();
-
-    post.comment.push(comment._id);
-    post.save();
-
-    res.send(comment);
+  
 })
 
 // Get all comments from blogs
