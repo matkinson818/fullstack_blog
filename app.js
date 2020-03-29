@@ -1,6 +1,8 @@
 const express = require('express');
 const blogs = require('./routes/blogs');
 const authRouter = require('./routes/auth');
+const logger = require('./middleware/logger');
+const morgan = require('morgan');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -10,6 +12,12 @@ dotenv.config({ path: './config/config.env' })
 
 // Setup express app
 const app = express();
+
+// Use logger middleware
+if(process.env.NODE_ENV == 'development') {
+    app.use(morgan('tiny'));
+};
+
 
 // Connecting to the MongoDB database
 mongoose.connect('mongodb://localhost/blog', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, 'useCreateIndex': true });

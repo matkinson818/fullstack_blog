@@ -10,7 +10,7 @@ exports.getBlog = (req, res, next) => {
 
 // Delete a blog
 exports.deleteBlog = (req, res, next) => {
-    res.status(200).json({ msg: "Blog deleted"});
+    res.status(200).json({ msg: `Blog post ${req.params.id} deleted`});
 };
 
 // Create a blog
@@ -20,5 +20,5 @@ exports.createBlog = (req, res, next) => {
 
 // Update blog
 exports.updateBlog = (req, res, next) => {
-    res.status(200).json({ msg: "Blog updated"})
+    res.status(200).json({ msg: `Blog post ${req.params.id} updated`})
 }
