@@ -1,5 +1,5 @@
 const express = require('express');
-const routes = require('./routes/route');
+const blogs = require('./routes/blogs');
 const authRouter = require('./routes/auth');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
@@ -27,7 +27,7 @@ app.use((err, req, res, next) => {
 })
 
 //Initalize routes
-app.use('/api', routes);
+app.use('/api/v1/blogs', blogs);
 
 app.use("/auth", require("./routes/auth"));
 

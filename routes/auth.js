@@ -36,8 +36,8 @@ authRouter.post('/login', (req, res, next) => {
             res.sendStatus(403);
             return next(new Error("Email and password are incorrect"));
         }
-            const token = jwt.sign(user.toObject(), process.env.SECRET);
-            return res.send({token: token, user: user.toObject(), success: true});
+            const token = jwt.sign(user.toObject)
+            res.send({token: token, user: user.toObject(), success: true});
         })
     });
 
