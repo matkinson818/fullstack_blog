@@ -1,13 +1,26 @@
 const express = require('express');
-const routes = require('./route');
+const blogs = require('./routes/blogs');
+const authRouter = require('./routes/auth');
+const logger = require('./middleware/logger');
+const morgan = require('morgan');
+const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+
+//Load env vars
+dotenv.config({ path: './config/config.env' })
 
 // Setup express app
 const app = express();
 
+// Use logger middleware
+if(process.env.NODE_ENV == 'development') {
+    app.use(morgan('tiny'));
+};
+
+
 // Connecting to the MongoDB database
-mongoose.connect('mongodb://localhost/blog', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, 'useCreateIndex': true });
+mongoose.connect(process.env.CONN_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, 'useCreateIndex': true });
 mongoose.Promise = global.Promise;
 
 // Setting up a port variable
@@ -22,7 +35,9 @@ app.use((err, req, res, next) => {
 })
 
 //Initalize routes
-app.use('/api', routes);
+app.use('/api/v1/blogs', blogs);
+
+app.use("/auth", require("./routes/auth"));
 
 // Listen for requests
 app.listen(PORT, () => console.log(`Listening on PORT: ${PORT}`))

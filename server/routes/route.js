@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Blog = require('./models/Blog')
-const User = require('./models/Users')
+const Blog = require('../models/Blog')
+const User = require('../models/Users')
 
 // Get all blog
 router.get('/', (req, res) => {
@@ -9,6 +9,16 @@ router.get('/', (req, res) => {
         res.send(blogs);
     })
 });
+
+//Create an comment on blog
+router.post('/post/:id', (req, res) => {
+  
+})
+
+// Get all comments from blogs
+router.get('/post/:id', (req, res) => {
+    res.send({ok: true});
+})
 
 // Add new blog
 router.post('/posts', (req, res, next) => {
