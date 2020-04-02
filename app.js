@@ -20,7 +20,7 @@ if(process.env.NODE_ENV == 'development') {
 
 
 // Connecting to the MongoDB database
-mongoose.connect('mongodb://localhost/blog', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, 'useCreateIndex': true });
+mongoose.connect(process.env.CONN_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, 'useCreateIndex': true });
 mongoose.Promise = global.Promise;
 
 // Setting up a port variable
