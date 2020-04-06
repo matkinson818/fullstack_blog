@@ -1,10 +1,15 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const slugify = require('slugify');
 
-const blogSchema = new Schema({
+const blogSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: [true, 'Title is required']
+        unique: true,
+        required: [true, 'Title is required'],
+        trim: true
+    },
+    slug: {
+        type: String
     },
     author: String,
     post: {
@@ -14,12 +19,17 @@ const blogSchema = new Schema({
     date: {
         type: Date,
         default: Date.now
+    },
+    meta: {
+        votes: Number
     }
-    // meta: {
-    //     votes: Number
-    // }
+});
+
+//create blog slug
+blogSchema.pre('save', function(next) {
+    // console.log('Slugify ran', this.title)
+    this.slug = slugify(this.title, { replacement: '_', lower: true })
+    next();
 })
 
-const Blog = mongoose.model('Blog', blogSchema);
-
-module.exports = Blog;
+module.exports = mongoose.model('Blog', blogSchema);
