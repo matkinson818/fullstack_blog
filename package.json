@@ -11,8 +11,12 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.1",
     "mongoose-unique-validator": "^2.0.3",
+<<<<<<< HEAD:server/package.json
     "morgan": "^1.10.0",
     "slugify": "^1.4.0"
+=======
+    "morgan": "^1.10.0"
+>>>>>>> d840e21a3951d1166841a04cc14e219077628689:package.json
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
