@@ -17,13 +17,10 @@ mongoose.connect(process.env.CONN_URI,
     });
 
 mongoose.Promise = global.Promise;
-<<<<<<< HEAD:server/app.js
 
 //Route files
 const blogs = require('./routes/blogs');
 const authRouter = require('./routes/auth');
-=======
->>>>>>> 636d8e2223fd30601f333917bf130166484dbde0:app.js
 
 // Setup express app
 const app = express();
@@ -36,20 +33,11 @@ if(process.env.NODE_ENV == 'development') {
     app.use(morgan('tiny'));
 };
 
-<<<<<<< HEAD:server/app.js
 //Mount routes
 app.use('/api/v1/blogs', blogs);
 app.use('/api/v1/authRouter', authRouter);
 
 app.use(errorHandler);
-=======
-//Initalize routes
-app.use('/api/v1/blogs', blogs);
-
-app.use(errorHandler);
-
-// app.use("/auth", require("./routes/auth"));
->>>>>>> 636d8e2223fd30601f333917bf130166484dbde0:app.js
 
 // Setting up a port variable
 const PORT = process.env.PORT || 5000;
