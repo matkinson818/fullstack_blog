@@ -27,7 +27,7 @@ const blogSchema = new mongoose.Schema({
 
 //create blog slug
 blogSchema.pre('save', function(next) {
-    console.log('Slugify ran', this.title)
+    // console.log('Slugify ran', this.title)
     this.slug = slugify(this.title, { replacement: '_', lower: true })
     next();
 })
