@@ -36,7 +36,6 @@ if(process.env.NODE_ENV == 'development') {
 //Mount routes
 app.use('/api/v1/blogs', blogs);
 app.use('/api/v1/authRouter', authRouter);
-
 app.use(errorHandler);
 
 // Setting up a port variable

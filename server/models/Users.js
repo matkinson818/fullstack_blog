@@ -6,12 +6,12 @@ const jwt =  require('jsonwebtoken');
 const secret = require('../app').secret;
 
 const userSchema = new Schema({
-    username: {
-        type: String,
-        unique: true,
-        required: [true, 'Username is required'],
-        index: true
-    },
+    // username: {
+    //     type: String,
+    //     unique: true,
+    //     required: [true, 'Username is required'],
+    //     index: true
+    // },
     email: {
         type: String,
         unique: true,
@@ -43,22 +43,24 @@ const userSchema = new Schema({
     salt: String
 })
 
+// Encrypt passwords
 userSchema.pre('save', async function(next){
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hashSync(this.password, salt);
-})
+});
 
-// userSchema.methods.generateJWT = () => {
-//     let today = new Date();
-//     let exp = new Date(today);
-//     exp.setDate(today.getDate() + 60);
+// Generate JWT
+userSchema.methods.generateJWT = function() {
+    return jwt.sign({
+        id: this._id },
+        process.env.JWT_SECRET,
+        {expiresIn: process.env.JWT_EXPIRE}, secret)
+};
 
-//     return jwt.sign({
-//         id: this._id,
-//         username: this.username,
-//         exp: parseInt(exp.getTime() / 1000),
-//     }, secret)
-// }
+// Match entered password with db password
+userSchema.methods.validPassword = async function (enteredPassword){
+    return await bcrypt.compare(enteredPassword, this.password)
+}
 
 userSchema.plugin(uniqueValidator, {message: 'is already taken.'})
 
