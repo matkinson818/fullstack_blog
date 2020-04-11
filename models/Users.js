@@ -9,25 +9,36 @@ const userSchema = new Schema({
     username: {
         type: String,
         unique: true,
-        required: [true, 'Username is required'], match: [/^[a-zA-Z0-9]+$/, 'is invalid'], index: true
+        required: [true, 'Username is required'],
+        index: true
     },
-    // email: {
-    //     type: String,
-    //     unique: true,
-    //     required: [true, 'Email is required'], match: [/^[a-zA-Z0-9]+$/, 'is invalid'], index: true
-    // },
-    // firstName: {
-    //     type: String,
-    //     required: [true, 'Firstname is required']
-    // },
-    // lastName: {
-    //     type: String,
-    //     required: [true, 'Lastname is required']
-    // },
+    email: {
+        type: String,
+        unique: true,
+        required: [true, 'Email is required'],
+        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 
+        'is invalid']
+    },
+    firstName: {
+        type: String,
+        required: [true, 'Firstname is required']
+    },
+    lastName: {
+        type: String,
+        required: [true, 'Lastname is required']
+    },
     password: {
         type: String,
-        required: true
-    }, 
+        required: true,
+        minlength: 5,
+        select: false
+    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
     hash: String,
     salt: String
 })

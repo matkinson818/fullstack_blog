@@ -1,6 +1,4 @@
 const express = require('express');
-const blogs = require('./routes/blogs');
-const authRouter = require('./routes/auth');
 const logger = require('./middleware/logger');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
@@ -20,6 +18,10 @@ mongoose.connect(process.env.CONN_URI,
 
 mongoose.Promise = global.Promise;
 
+//Route files
+const blogs = require('./routes/blogs');
+const authRouter = require('./routes/auth');
+
 // Setup express app
 const app = express();
 
@@ -31,12 +33,11 @@ if(process.env.NODE_ENV == 'development') {
     app.use(morgan('tiny'));
 };
 
-//Initalize routes
+//Mount routes
 app.use('/api/v1/blogs', blogs);
+app.use('/api/v1/authRouter', authRouter);
 
 app.use(errorHandler);
-
-// app.use("/auth", require("./routes/auth"));
 
 // Setting up a port variable
 const PORT = process.env.PORT || 5000;
