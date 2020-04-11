@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const bcrypt = require('bcryptjs');
 const uniqueValidator = require('mongoose-unique-validator');
-const crypto = require('crypto');
 const jwt =  require('jsonwebtoken');
 const secret = require('../app').secret;
 
@@ -43,14 +43,10 @@ const userSchema = new Schema({
     salt: String
 })
 
-// userSchema.methods.setPassword = (password) => {
-//     this.salt = crypto.randomBytes(16).toString('hex');
-//     this.hash - crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
-// };
-
-// userSchema.methods.validPassword = (password) => {
-//     let hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
-// }
+userSchema.pre('save', async function(next){
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hashSync(this.password, salt);
+})
 
 // userSchema.methods.generateJWT = () => {
 //     let today = new Date();

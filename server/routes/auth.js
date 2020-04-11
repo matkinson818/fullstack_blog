@@ -5,7 +5,7 @@ const jwt = require ('jsonwebtoken');
 const { register } = require('../controllers/auth')
 
 //Signup
-authRouter.post('/register', reister);
+authRouter.post('/register', register);
 
 //Login
 authRouter.post('/login', (req, res, next) => {
