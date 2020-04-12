@@ -3,6 +3,7 @@ const logger = require('./middleware/logger');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const cookieparser = require('cookie-parser');
 const errorHandler = require('./middleware/errorHandler');
 
 //Load env vars
@@ -36,7 +37,9 @@ if(process.env.NODE_ENV == 'development') {
 //Mount routes
 app.use('/api/v1/blogs', blogs);
 app.use('/api/v1/authRouter', authRouter);
+
 app.use(errorHandler);
+app.use(cookieparser);
 
 // Setting up a port variable
 const PORT = process.env.PORT || 5000;
