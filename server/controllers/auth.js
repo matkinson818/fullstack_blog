@@ -13,12 +13,7 @@ exports.register = asyncHandler(async (req, res, next) => {
         lastName,
         password
     });
-
-    // // Create token
-    // const token = user.generateJWT();
-
-    // res.status(200).json({ msg: 'success', token: token})
-
+    
     sendTokenRes(user, 200, res);
 })
 
@@ -46,11 +41,6 @@ exports.login = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse('Invalid credentials', 401))
     }
 
-    // // Create token
-    // const token = user.generateJWT();
-
-    // res.status(200).json({ msg : 'success', token: token })
-
     sendTokenRes(user, 200, res);
 });
 
@@ -63,7 +53,7 @@ const sendTokenRes = (user, statusCode, res) => {
         httpOnly: true
     };
 
-    if(process.env.NODE_ENV === 'production'){
+    if(process.env.NODE_ENV === 'production') {
         options.secure = true;
     }
 
@@ -80,6 +70,25 @@ const sendTokenRes = (user, statusCode, res) => {
 exports.currentUser = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user.id);
 
+    res.status(200).json({
+        msg: 'success',
+        data: user
+    });
+});
+
+// Forgot password
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email });
+
+    if(!user) {
+        return next(new ErrorResponse('There is no user with that email', 404))
+    }
+
+    // Method inside of user model
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+    
     res.status(200).json({
         msg: 'success',
         data: user

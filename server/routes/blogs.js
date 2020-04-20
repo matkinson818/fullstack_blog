@@ -1,18 +1,18 @@
 const express = require('express');
 const { getBlogs, getBlog, createBlog, updateBlog, deleteBlog } = require('../controllers/blogs');
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
 router
 .route('/')
 .get(getBlogs)
-.post(protect, createBlog);
+.post(protect, authorize('admin'), createBlog);
 
 router
 .route('/:id')
 .get(getBlog)
-.put(protect, updateBlog)
-.delete(protect, deleteBlog);
+.put(protect, authorize('admin'), updateBlog)
+.delete(protect, authorize('admin'), deleteBlog);
 
 module.exports = router;

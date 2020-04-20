@@ -23,9 +23,19 @@ exports.protect = asyncHandler(async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         console.log(decoded);
         // Currently logged in user
-        req.user = await User.findbyId(decoded.id);
+        req.user = await User.findById(decoded.id);
         next();
     } catch (err) {
         return next(new ErrorResponse('Not Authorized', 401));
     }
 });
+
+// Grant access to specific roles
+exports.authorize = (...roles) => {
+    return (req, res, next) => {
+        if(!roles.includes(req.user.role)){
+            return next(new ErrorResponse('Not Authorized', 403));
+        }
+        next();
+    }
+}

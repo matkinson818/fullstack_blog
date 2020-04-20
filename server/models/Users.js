@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
@@ -33,6 +34,11 @@ const userSchema = new Schema({
         minlength: 5,
         select: false
     },
+    role: {
+        type: String,
+        enum: ['guest', 'user'],
+        default: 'user'
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     createdAt: {
@@ -44,7 +50,11 @@ const userSchema = new Schema({
 })
 
 // Encrypt passwords
-userSchema.pre('save', async function(next){
+userSchema.pre('save', async function(next) {
+    if(!this.isModified('password')) {
+        next();
+    }
+
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hashSync(this.password, salt);
 });
@@ -58,8 +68,25 @@ userSchema.methods.generateJWT = function() {
 };
 
 // Match entered password with db password
-userSchema.methods.validPassword = async function (enteredPassword){
+userSchema.methods.validPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password)
+}
+
+// Generate and hash password token
+userSchema.methods.getResetPasswordToken = function() {
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Hash token and set to reset resetPasswordToken field
+    this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+    // Set expire
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 }
 
 userSchema.plugin(uniqueValidator, {message: 'is already taken.'})

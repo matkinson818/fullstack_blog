@@ -1,17 +1,25 @@
 const express = require('express');
-const { register, login, currentUser } = require('../controllers/auth')
+
+// registering user and authentication
+const { 
+    register, 
+    login, 
+    currentUser,
+    forgotPassword
+} = require('../controllers/auth')
 
 const authRouter = express.Router();
 
-// gives acccess to req.user which is needed to get cuurent user
-const { protect } = require('../middleware/auth');
+// used to protect routes and authorize
+const { 
+    protect, 
+    authorize 
+} = require('../middleware/auth');
 
-//Signup
+// Init routes
 authRouter.post('/register', register);
-
-//Login
 authRouter.post('/login', login);
-
-authRouter.get('/currentUser', protect, currentUser);
+authRouter.get('/currentuser', protect, currentUser);
+authRouter.post('/forgotpassword', forgotPassword);
 
 module.exports = authRouter;

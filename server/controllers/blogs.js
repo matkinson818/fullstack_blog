@@ -15,7 +15,11 @@ exports.getBlogs = asyncHandler(async (req, res, next) => {
 
 // Get a single blog
 exports.getBlog = asyncHandler(async (req, res, next) => {
-    const blogs = await Blog.findById(req.params.id);
+    const blog = await Blog.findById(req.params.id);
+
+    if(!blog) {
+        return next(new ErrorResponse('Blog Not Found', 400))
+    }
 
     res.status(200).json({
         msg: 'success',

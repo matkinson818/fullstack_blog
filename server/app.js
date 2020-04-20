@@ -3,8 +3,8 @@ const logger = require('./middleware/logger');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const cookieparser = require('cookie-parser');
 const errorHandler = require('./middleware/errorHandler');
+const cookieparser = require('cookie-parser');
 
 //Load env vars
 dotenv.config({ path: './config/config.env' });
