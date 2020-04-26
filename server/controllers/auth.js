@@ -1,6 +1,9 @@
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
+const sendEmail = require('../utils/sendEmail');
+const crypto = require('crypto');
 const User = require('../models/Users');
+
 
 // Register a new user
 exports.register = asyncHandler(async (req, res, next) => {
@@ -67,7 +70,7 @@ const sendTokenRes = (user, statusCode, res) => {
 };
 
 // Get current logged in user
-exports.currentUser = asyncHandler(async (req, res, next) => {
+exports.currentUser = asyncHandler( async (req, res, next) => {
     const user = await User.findById(req.user.id);
 
     res.status(200).json({
@@ -76,21 +79,106 @@ exports.currentUser = asyncHandler(async (req, res, next) => {
     });
 });
 
-// Forgot password
-exports.forgotPassword = asyncHandler(async (req, res, next) => {
+// Forgot password method
+exports.forgotPassword = asyncHandler( async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
 
     if(!user) {
         return next(new ErrorResponse('There is no user with that email', 404))
     }
 
-    // Method inside of user model
+    // Get reset token, Method inside of user model
     const resetToken = user.getResetPasswordToken();
-
     await user.save({ validateBeforeSave: false });
     
+    // Create reset url
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/authRouter/resetpassword/${resetToken}`
+
+    const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'Password reset token',
+            message
+        })
+
+        res.status(200).json({
+            msg: 'success',
+            data: 'Email sent'
+        });
+        
+    } catch (err) {
+        console.log(err);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save({ validateBeforeSave: false });
+
+        return next(new ErrorResponse('Email could not be sent', 500))
+    }
+});
+
+// Reset password
+exports.resetPassword = asyncHandler( async (req, res, next) => {
+    // Get hashed token
+    const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.resetToken)
+    .digest('hex');
+
+    // Get user by resetpassword token and password expire that is greater then now
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if(!user) {
+        return next(new ErrorResponse('Invalid token', 400));
+    }
+
+    // Set password
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    sendTokenRes(user, 200, res);
+})
+
+//update user details
+exports.updateUserDetails = asyncHandler( async (req, res, next) => {
+    
+    const fieldsUpdated = {
+        firstName: req.body.firstname,
+        lastName: req.body.lastname,
+        email: req.body.email
+    };
+
+    const user = await User.findByIdAndUpdate(req.user.id, fieldsUpdated, {
+        new: true,
+        runValidators: true,
+        context: 'query'
+    });
+
     res.status(200).json({
-        msg: 'success',
+        msg: 'Success',
         data: user
     });
 });
+
+// update password
+exports.updatePassword = asyncHandler( async (req, res, next) => {
+    // Find the current logged in user and the password
+    const user = await  User.findById(req.user.id).select('+password');
+
+    // Check current password
+    if(!(await user.validPassword(req.body.currentPassword))) {
+        return next(new ErrorResponse('Incorrect password', 401))
+    };
+
+    user.password = req.body.newPassword;
+    await user.save();
+
+    sendTokenRes(user, 200, res);
+})
